@@ -28,3 +28,7 @@ a {
 	box-shadow: none;
 	display: block;
 }
+
+.border-top-blue {
+	border-top: 3px solid #00B7FF;
+}

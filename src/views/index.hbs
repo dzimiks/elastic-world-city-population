@@ -1,3 +1,6 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
 <div class="container" id="app">
 	<div class="row">
 		<div class="col-12 text-center my-4">
@@ -10,24 +13,119 @@
 			<form action="" class="search-form" autocomplete="off">
 				<div class="form-group has-feedback">
 					<label for="search" class="sr-only">Search</label>
-					<input type="text" class="form-control" name="search" id="search" placeholder="Search...">
+					<input type="text" class="form-control" name="search" id="search" placeholder="Search..."
+						   v-model="query">
 					<span class="glyphicon glyphicon-search form-control-feedback"></span>
 				</div>
 			</form>
 		</div>
 	</div>
 
+	<div class="row mb-4">
+		<div class="col-12 mx-auto text-center mb-2">
+			<button class="btn btn-primary" id="filterCountry" @click="filterCountry()">Filter Country</button>
+			<button class="btn btn-primary" id="rangeQueryGte" @click="rangeQueryGte()">Range Query gte</button>
+			<button class="btn btn-primary" id="rangeQueryLte" @click="rangeQueryLte()">Range Query lte</button>
+		</div>
+
+		<div class="col-12 mx-auto text-center">
+			<button class="btn btn-success" id="sortAsc" @click="sortAsc()">Sort Ascending</button>
+			<button class="btn btn-success" id="sortDesc" @click="sortDesc()">Sort Descending</button>
+		</div>
+	</div>
+
 	<div class="row">
-		<div class="col-4">
-			<h3>test</h3>
-		</div>
+		<div class="col-md-4" v-for="result in results">
+			<div class="card mb-4">
+				<div class="card-body border-top-blue">
+					<h5 class="card-title"><b>\{{result._source.AccentCity}}</b></h5>
+					<hr>
+					<div class="card-text">
+						<p>
+							<b>Country:</b>
+							\{{result._source.Country}}
+						</p>
 
-		<div class="col-4">
-			<h3>test</h3>
-		</div>
+						<p>
+							<b>Population:</b>
+							\{{result._source.Population}}
+						</p>
 
-		<div class="col-4">
-			<h3>test</h3>
+						<p>
+							<b>Latitude:</b>
+							\{{result._source.Location.lat}}
+						</p>
+
+						<p>
+							<b>Longitude:</b>
+							\{{result._source.Location.lon}}
+						</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+	const URL = 'http://localhost:3000';
+	// Create a new vue instance
+	const app = new Vue({
+		el: '#app',
+		data: {
+			results: [],
+			query: ''
+		},
+		// Declare method for performing search
+		methods: {
+			search: function () {
+				axios.get(`${URL}/search?q=${this.query}`)
+						.then((response) => {
+							this.results = response.data
+						})
+			},
+
+			filterCountry: function () {
+				axios.get(`${URL}/filter?q=${this.query}`)
+						.then((response) => {
+							this.results = response.data
+						})
+			},
+
+			rangeQueryGte: function () {
+				axios.get(`${URL}/range/gte?q=${this.query}`)
+						.then((response) => {
+							this.results = response.data
+						})
+			},
+
+			rangeQueryLte: function () {
+				axios.get(`${URL}/range/lte?q=${this.query}`)
+						.then((response) => {
+							this.results = response.data
+						})
+			},
+
+			sortAsc: function () {
+				axios.get(`${URL}/sort/asc`)
+						.then((response) => {
+							this.results = response.data
+						})
+			},
+
+			sortDesc: function () {
+				axios.get(`${URL}/sort/desc`)
+						.then((response) => {
+							this.results = response.data
+						})
+			}
+		},
+		// Declare vue watchers
+		watch: {
+			// Watch for change in the query string and recall the search method
+			query: function () {
+				this.search();
+			}
+		}
+	});
+</script>
