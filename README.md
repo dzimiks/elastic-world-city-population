@@ -5,11 +5,13 @@
 Run `yarn install` and `yarn start`.
 
 ## Run ElasticSearch
+
 > ./bin/elasticsearch
 
 ## Cat indices
 
 Open http://localhost:9200/_cat/indices?v in browser.
 
-## Running Logstash
-> ./bin/logstash -f data.conf --config.reload.automatic
+## Run Logstash
+
+> ./bin/logstash -f logstash.conf --config.reload.automatic

@@ -36,8 +36,9 @@ app.use('/', indexRouter);
 app.get('/search', (req, res) => {
 	console.log('Search Query:', req.query);
 
-	// Declare the query object to search elastic search and return only 200 results from the first result found.
-	// also match any data where the name is like the query string sent in
+	// Declare the query object to search elastic search and return only 200 results
+	// from the first result found. Also match any data where the name is like the
+	// query string sent in.
 	const body = {
 		size: 200,
 		from: 0,
@@ -48,7 +49,7 @@ app.get('/search', (req, res) => {
 		}
 	};
 
-	// Perform the actual search passing in the index, the search query and the type
+	// Perform the actual search passing in the index, the search query and the type.
 	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
