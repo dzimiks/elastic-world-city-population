@@ -3,18 +3,18 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const elasticsearch = require('elasticsearch');
 
 const indexRouter = require('./src/routes/index');
 
 const app = express();
 
-const INDEX_NAME = 'world_cities_population';
-const client = new elasticsearch.Client({
-	hosts: ['http://localhost:9200']
-});
+// Create ElasticSearch instance
+const elastic = require('./src/public/js/elastic');
+const INDEX_NAME = elastic.INDEX_NAME;
+const ELASTICSEARCH_URL = elastic.ELASTICSEARCH_URL;
+const elasticClient = elastic.connect(ELASTICSEARCH_URL);
 
-// view engine setup
+// View engine setup
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.set('view engine', 'hbs');
 
@@ -49,7 +49,7 @@ app.get('/search', (req, res) => {
 	};
 
 	// Perform the actual search passing in the index, the search query and the type
-	client.search({index: INDEX_NAME, body: body})
+	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
 		})
@@ -72,7 +72,7 @@ app.get('/filter', (req, res) => {
 		}
 	};
 
-	client.search({index: INDEX_NAME, body: body})
+	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
 		})
@@ -97,7 +97,7 @@ app.get('/range/gte', (req, res) => {
 		}
 	};
 
-	client.search({index: INDEX_NAME, body: body})
+	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
 		})
@@ -122,7 +122,7 @@ app.get('/range/lte', (req, res) => {
 		}
 	};
 
-	client.search({index: INDEX_NAME, body: body})
+	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
 		})
@@ -144,7 +144,7 @@ app.get('/sort/asc', (req, res) => {
 		}]
 	};
 
-	client.search({index: INDEX_NAME, body: body})
+	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
 		})
@@ -166,7 +166,7 @@ app.get('/sort/desc', (req, res) => {
 		}]
 	};
 
-	client.search({index: INDEX_NAME, body: body})
+	elasticClient.search({index: INDEX_NAME, body: body})
 		.then((results) => {
 			res.send(results.hits.hits);
 		})
@@ -176,12 +176,12 @@ app.get('/sort/desc', (req, res) => {
 		});
 });
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function (req, res, next) {
 	next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function (err, req, res, next) {
 	// set locals, only providing error in development
 	res.locals.message = err.message;

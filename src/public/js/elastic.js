@@ -1,13 +1,13 @@
 const elasticsearch = require('elasticsearch');
 
 /**
- * Instantiate an Elasticseach client.
+ * Instantiate an ElasticSearch client.
  *
  * @param host: http://localhost:9200
  */
 const connect = (host) => {
 	return new elasticsearch.Client({
-		host: [host]
+		hosts: [host]
 	});
 };
 
@@ -82,8 +82,12 @@ const deleteIndex = (client, name) => {
 
 const ELASTICSEARCH_URL = 'http://localhost:9200';
 const INDEX_NAME = 'world_cities_population';
-const ELASTICSEARCH_CLIENT = connect(ELASTICSEARCH_URL);
 
-ping(ELASTICSEARCH_CLIENT);
-createIndex(ELASTICSEARCH_CLIENT, INDEX_NAME);
-// deleteIndex(ELASTICSEARCH_CLIENT, INDEX_NAME);
+module.exports = {
+	connect,
+	ping,
+	createIndex,
+	deleteIndex,
+	ELASTICSEARCH_URL,
+	INDEX_NAME
+};
